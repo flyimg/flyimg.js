@@ -1,0 +1,273 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flyimg JS Example</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="container py-4">
+      <div class="row mb-4">
+        <div class="col">
+          <h1 class="h3">Flyimg URL Builder (Browser)</h1>
+          <p class="text-muted mb-0">Generate a Flyimg URL and preview the result below.</p>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-12 col-lg-6">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <div class="mb-3">
+                <label class="form-label">Instance URL</label>
+                <input id="instance" class="form-control" placeholder="https://demo.flyimg.io" value="https://demo.flyimg.io">
+                <div class="form-text">Your Flyimg instance base URL.</div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Source image URL</label>
+                <input id="source" class="form-control" placeholder="https://picsum.photos/seed/cat/1200/800" value="https://picsum.photos/seed/cat/1200/800">
+              </div>
+              <div class="row g-3">
+                <div class="col-4">
+                  <label class="form-label">Width</label>
+                  <input id="width" class="form-control" type="number" placeholder="800" value="800">
+                </div>
+                <div class="col-4">
+                  <label class="form-label">Height</label>
+                  <input id="height" class="form-control" type="number" placeholder="600" value="600">
+                </div>
+                <div class="col-4">
+                  <label class="form-label">Quality</label>
+                  <input id="quality" class="form-control" type="number" placeholder="80" value="80">
+                </div>
+              </div>
+
+              <div class="accordion mt-3" id="advOpts">
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="advHeading">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#advCollapse" aria-expanded="false" aria-controls="advCollapse">
+                      Advanced options
+                    </button>
+                  </h2>
+                  <div id="advCollapse" class="accordion-collapse collapse" aria-labelledby="advHeading" data-bs-parent="#advOpts">
+                    <div class="accordion-body">
+                      <div class="row g-3">
+                        <div class="col-6">
+                          <label class="form-label">Output</label>
+                          <input id="output" class="form-control" placeholder="auto | jpg | png | webp | avif">
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label">Filter</label>
+                          <input id="filter" class="form-control" placeholder="Lanczos">
+                        </div>
+
+                        <div class="col-6">
+                          <label class="form-label">Unsharp</label>
+                          <input id="unsharp" class="form-control" placeholder="radiusxsigma+amount">
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label">Sharpen</label>
+                          <input id="sharpen" class="form-control" placeholder="amount">
+                        </div>
+
+                        <div class="col-6">
+                          <label class="form-label">Blur</label>
+                          <input id="blur" class="form-control" placeholder="radiusxsigma">
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label">Crop</label>
+                          <input id="crop" class="form-control" placeholder="WxH+X+Y or mode">
+                        </div>
+
+                        <div class="col-6">
+                          <label class="form-label">Background</label>
+                          <input id="background" class="form-control" placeholder="#RRGGBB or name">
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label">Gravity</label>
+                          <input id="gravity" class="form-control" placeholder="Center | NorthWest | ...">
+                        </div>
+
+                        <div class="col-6">
+                          <label class="form-label">Rotate</label>
+                          <input id="rotate" type="number" class="form-control" placeholder="90">
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label">Resize</label>
+                          <input id="resize" class="form-control" placeholder="fit | fill | ...">
+                        </div>
+
+                        <div class="col-6">
+                          <label class="form-label">Text</label>
+                          <input id="text" class="form-control" placeholder="Overlay text">
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label">Text Color</label>
+                          <input id="text-color" class="form-control" placeholder="white | #RRGGBB">
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label">Text Size</label>
+                          <input id="text-size" type="number" class="form-control" placeholder="14">
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label">Text BG</label>
+                          <input id="text-bg" class="form-control" placeholder="#00000000">
+                        </div>
+
+                        <div class="col-6">
+                          <label class="form-label">Scale</label>
+                          <input id="scale" type="number" step="0.1" class="form-control" placeholder="2">
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label">Sampling Factor</label>
+                          <input id="sampling-factor" class="form-control" placeholder="1x1 | 2x2">
+                        </div>
+
+                        <div class="col-6">
+                          <label class="form-label">Extent</label>
+                          <input id="extent" class="form-control" placeholder="WxH">
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label">Colorspace</label>
+                          <input id="colorspace" class="form-control" placeholder="sRGB">
+                        </div>
+
+                        <div class="col-4">
+                          <div class="form-check mt-4">
+                            <input class="form-check-input" type="checkbox" id="strip">
+                            <label class="form-check-label" for="strip">Strip metadata</label>
+                          </div>
+                        </div>
+                        <div class="col-4">
+                          <div class="form-check mt-4">
+                            <input class="form-check-input" type="checkbox" id="auto-orient">
+                            <label class="form-check-label" for="auto-orient">Auto orient</label>
+                          </div>
+                        </div>
+                        <div class="col-4">
+                          <div class="form-check mt-4">
+                            <input class="form-check-input" type="checkbox" id="refresh">
+                            <label class="form-check-label" for="refresh">Refresh (bypass cache)</label>
+                          </div>
+                        </div>
+
+                        <div class="col-4">
+                          <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="smart-crop">
+                            <label class="form-check-label" for="smart-crop">Smart crop</label>
+                          </div>
+                        </div>
+                        <div class="col-4">
+                          <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="preserve-aspect-ratio" checked>
+                            <label class="form-check-label" for="preserve-aspect-ratio">Preserve aspect ratio</label>
+                          </div>
+                        </div>
+                        <div class="col-4">
+                          <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="preserve-natural-size" checked>
+                            <label class="form-check-label" for="preserve-natural-size">Preserve natural size</label>
+                          </div>
+                        </div>
+
+                        <div class="col-4">
+                          <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="webp-lossless">
+                            <label class="form-check-label" for="webp-lossless">WebP lossless</label>
+                          </div>
+                        </div>
+                        <div class="col-4">
+                          <label class="form-label">WebP method</label>
+                          <input id="webp-method" type="number" min="0" max="6" class="form-control" placeholder="4">
+                        </div>
+                        <div class="col-4">
+                          <label class="form-label">GIF frame</label>
+                          <input id="gif-frame" type="number" class="form-control" placeholder="0">
+                        </div>
+
+                        <div class="col-6">
+                          <label class="form-label">Extract</label>
+                          <input id="extract" class="form-control" placeholder="geometry">
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label">PDF page number</label>
+                          <input id="pdf-page-number" type="number" min="1" class="form-control" placeholder="1">
+                        </div>
+
+                        <div class="col-3">
+                          <label class="form-label">Extract top X</label>
+                          <input id="extract-top-x" type="number" class="form-control">
+                        </div>
+                        <div class="col-3">
+                          <label class="form-label">Extract top Y</label>
+                          <input id="extract-top-y" type="number" class="form-control">
+                        </div>
+                        <div class="col-3">
+                          <label class="form-label">Extract bottom X</label>
+                          <input id="extract-bottom-x" type="number" class="form-control">
+                        </div>
+                        <div class="col-3">
+                          <label class="form-label">Extract bottom Y</label>
+                          <input id="extract-bottom-y" type="number" class="form-control">
+                        </div>
+
+                        <div class="col-6">
+                          <label class="form-label">Density</label>
+                          <input id="density" type="number" class="form-control" placeholder="72">
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label">Time</label>
+                          <input id="time" class="form-control" placeholder="00:00:01">
+                        </div>
+
+                        <div class="col-6">
+                          <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="monochrome">
+                            <label class="form-check-label" for="monochrome">Monochrome</label>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label">Face blur</label>
+                          <input id="face-blur" type="number" class="form-control">
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label">Face crop</label>
+                          <input id="face-crop" type="number" class="form-control">
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label">Face crop position</label>
+                          <input id="face-crop-position" type="number" class="form-control">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="d-grid mt-3">
+                <button id="build" class="btn btn-primary">Build URL</button>
+              </div>
+              <div class="mt-3">
+                <label class="form-label">Generated URL</label>
+                <input id="out" class="form-control" readonly>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-6">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h2 class="h5 mb-3">Preview</h2>
+              <img id="preview" class="img-fluid rounded border" alt="Preview will appear here"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script type="module" src="./main.js"></script>
+  </body>
+  </html>
+
+
