@@ -28,9 +28,14 @@
   "keywords": [
     "flyimg",
     "image",
-    "url",
-    "builder",
-    "yaml"
+    "resize",
+    "crop",
+    "rotate",
+    "filter",
+    "blur",
+    "sharpen",
+    "unsharp",
+    "face-crop"
   ],
   "engines": {
     "node": ">=18"

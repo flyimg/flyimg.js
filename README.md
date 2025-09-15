@@ -1,6 +1,6 @@
 # @flyimg/flyimg.js
 
-Interact with a Flyimg endpoint from Node.js: build option strings using `options_keys` and download the transformed image with progress callbacks.
+Interact with a Flyimg instance from Node.js: construct transformation URLs and download the processed image with progress callbacks.
 
 ## Install
 
@@ -32,22 +32,20 @@ flyimg({
 });
 ```
 
-- Only `options_keys` are used client-side. Server-controlled defaults or separators are ignored.
 - For local files, the client POSTs to `${instanceUrl}/upload` and expects `{ url }`.
 - The transformed image is streamed to a temp file. Call `cleanup()` to remove it.
 
 
 ## API
 
-- `flyimg({ instanceUrl, inputImage, options?, onDownloadProgress?, onUploadProgress?, optionsKeys? })`
+- `flyimg({ instanceUrl, inputImage, options?, onDownloadProgress?, onUploadProgress? })`
   - Returns: `{ outputImagePath, cleanup }`
-  - `optionsKeys` defaults to the documented mapping embedded in the library.
 
 ## Options reference
 
 See the upstream Flyimg documentation for full details and semantics: [`url-options.md`](https://github.com/flyimg/flyimg/blob/main/docs/url-options.md).
 
-Below are the long option names accepted by this package (mapped to their short keys on the wire). Pass them under `options` when calling `flyimg`.
+Below are the option names accepted by this package. They are converted into the proper Flyimg URL query parameters. Pass them under `options` when calling `flyimg`.
 
 | Long name | Short key | Description |
 | --- | --- | --- |
