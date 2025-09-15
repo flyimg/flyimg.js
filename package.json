@@ -1,6 +1,6 @@
 {
   "name": "@flyimg/flyimg.js",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Interact with a Flyimg endpoint: build URLs with the needed transformations options.",
   "license": "MIT",
   "type": "commonjs",
@@ -52,4 +52,3 @@
     "@semantic-release/exec": "^6.0.3"
   }
 }
-
