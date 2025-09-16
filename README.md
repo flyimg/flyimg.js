@@ -1,6 +1,18 @@
 # @flyimg/flyimg.js
 
-Interact with a Flyimg instance from Node.js: construct transformation URLs and download the processed image with progress callbacks.
+<p align="center">
+  <a href="https://flyimg.io" target="_blank">
+    <img alt="Flyimg" src="https://raw.githubusercontent.com/flyimg/graphic-assets/main/logo/raster/flyimg-logo-rgb.png" width="300">
+  </a>
+  <br />
+    <a href="https://flyimg.io/"><strong>Official website »</strong></a>
+    <br />
+    <a href="https://github.com/flyimg/flyimg">GitHub</a>
+    ·
+    <a href="https://github.com/flyimg/flyimg/issues">Bugs Report</a>
+</p>
+
+A Node.js client for Flyimg – easily build transformation URLs and fetch processed images directly from your Flyimg instance.
 
 ## Install
 
