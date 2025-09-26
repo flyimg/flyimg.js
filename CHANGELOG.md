@@ -1,3 +1,8 @@
+## 1.1.0 (2025-09-26)
+
+* feat: add upload functionality and enhance example usage ([1180ded](https://github.com/flyimg/flyimg.js/commit/1180ded))
+* docs: enhance README with logo, links, and clearer description of Flyimg client ([2c1aea1](https://github.com/flyimg/flyimg.js/commit/2c1aea1))
+
 ## <small>1.0.1 (2025-09-15)</small>
 
 * fix: update keywords in package.json and improve README for clarity ([7ad8d3b](https://github.com/flyimg/flyimg.js/commit/7ad8d3b))
