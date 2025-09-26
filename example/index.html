@@ -21,12 +21,41 @@
             <div class="card-body">
               <div class="mb-3">
                 <label class="form-label">Instance URL</label>
-                <input id="instance" class="form-control" placeholder="https://demo.flyimg.io" value="https://demo.flyimg.io">
+                <input id="instance" class="form-control" placeholder="https://demo.flyimg.io" value="http://localhost:5174/">
                 <div class="form-text">Your Flyimg instance base URL.</div>
               </div>
               <div class="mb-3">
                 <label class="form-label">Source image URL</label>
                 <input id="source" class="form-control" placeholder="https://picsum.photos/seed/cat/1200/800" value="https://picsum.photos/seed/cat/1200/800">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Or upload</label>
+                <ul class="nav nav-tabs" id="uploadTabs" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="file-tab" data-bs-toggle="tab" data-bs-target="#file-pane" type="button" role="tab" aria-controls="file-pane" aria-selected="true">File</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="json-tab" data-bs-toggle="tab" data-bs-target="#json-pane" type="button" role="tab" aria-controls="json-pane" aria-selected="false">Base64 / Data URI</button>
+                  </li>
+                </ul>
+                <div class="tab-content border border-top-0 p-3 rounded-bottom" id="uploadTabsContent">
+                  <div class="tab-pane fade show active" id="file-pane" role="tabpanel" aria-labelledby="file-tab" tabindex="0">
+                    <input id="file-input" class="form-control" type="file" accept="image/*">
+                    <div class="form-text">Choose an image to upload via POST.</div>
+                  </div>
+                  <div class="tab-pane fade" id="json-pane" role="tabpanel" aria-labelledby="json-tab" tabindex="0">
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="jsonKind" id="kind-base64" value="base64" checked>
+                      <label class="form-check-label" for="kind-base64">Base64</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="jsonKind" id="kind-datauri" value="dataUri">
+                      <label class="form-check-label" for="kind-datauri">Data URI</label>
+                    </div>
+                    <textarea id="json-input" class="form-control mt-2" rows="4" placeholder="iVBORw0KGgo... or data:image/png;base64,iVBOR..."></textarea>
+                    <div class="form-text">Paste a Base64 string or a full data URI.</div>
+                  </div>
+                </div>
               </div>
               <div class="row g-3">
                 <div class="col-4">
@@ -244,13 +273,19 @@
                   </div>
                 </div>
               </div>
-              <div class="d-grid mt-3">
-                <button id="build" class="btn btn-primary">Build URL</button>
+              <div class="row g-2 mt-3">
+                <div class="col-12 col-md-6 d-grid">
+                  <button id="build" class="btn btn-primary">Build URL (from URL)</button>
+                </div>
+                <div class="col-12 col-md-6 d-grid">
+                  <button id="upload" class="btn btn-success">Upload & Preview</button>
+                </div>
               </div>
               <div class="mt-3">
                 <label class="form-label">Generated URL</label>
                 <input id="out" class="form-control" readonly>
               </div>
+              <div class="mt-2 text-danger" id="error" style="display:none"></div>
             </div>
           </div>
         </div>

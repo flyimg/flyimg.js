@@ -18,6 +18,22 @@ export interface FlyimgResult {
   cleanup: () => Promise<void>;
 }
 
+export type UploadInput =
+  | Buffer
+  | Uint8Array
+  | NodeJS.ReadableStream
+  | { base64: string }
+  | { dataUri: string };
+
+export interface FlyimgUploadParams {
+  instanceUrl: string;
+  input: UploadInput;
+  options?: FlyimgOptions;
+  optionsKeys?: OptionsKeysMap; // override default mapping
+  contentType?: string; // only for raw binary bodies
+  onDownloadProgress?: (info: { receivedBytes: number; totalBytes?: number }) => void;
+}
+
 // Default mapping copied from the provided example YAML options_keys
 const DEFAULT_OPTIONS_KEYS: OptionsKeysMap = {
   q: 'quality',
@@ -178,6 +194,105 @@ export async function flyimg(params: FlyimgParams): Promise<FlyimgResult> {
   const finalUrl = baseWithUpload + urlPath;
 
   const outputImagePath = await downloadToTempFile(finalUrl, onDownloadProgress);
+  const cleanup = async () => {
+    await fs.promises.rm(outputImagePath, { force: true });
+  };
+  return { outputImagePath, cleanup };
+}
+
+
+async function streamResponseToTempFile(res: Response, onDownloadProgress?: FlyimgParams['onDownloadProgress']): Promise<string> {
+  if (!res.ok || !res.body) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`Request failed: ${res.status} ${res.statusText} ${text}`);
+  }
+  const totalBytes = Number(res.headers.get('content-length') || '') || undefined;
+  const tmpDir = os.tmpdir();
+  const guessedExtFromType = (() => {
+    const ct = res.headers.get('content-type') || '';
+    if (ct.includes('image/jpeg')) return '.jpg';
+    if (ct.includes('image/png')) return '.png';
+    if (ct.includes('image/webp')) return '.webp';
+    if (ct.includes('image/avif')) return '.avif';
+    if (ct.includes('image/gif')) return '.gif';
+    return '.img';
+  })();
+  const tmpPath = path.join(tmpDir, `flyimg-${crypto.randomBytes(6).toString('hex')}${guessedExtFromType}`);
+  const file = fs.createWriteStream(tmpPath);
+
+  const reader = (res.body as unknown as ReadableStream<Uint8Array>).getReader();
+  let receivedBytes = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (value) {
+        file.write(value);
+        receivedBytes += value.length;
+        onDownloadProgress?.({ receivedBytes, totalBytes });
+      }
+    }
+  } finally {
+    await new Promise<void>((resolve, reject) => {
+      file.once('finish', resolve);
+      file.once('error', reject);
+      file.end();
+    });
+  }
+  return tmpPath;
+}
+
+export async function flyimgUpload(params: FlyimgUploadParams): Promise<FlyimgResult> {
+  const { instanceUrl, input, options, optionsKeys, contentType, onDownloadProgress } = params;
+  const mapping = optionsKeys ?? DEFAULT_OPTIONS_KEYS;
+  const optionsSegment = buildOptionsSegment(options, mapping);
+  const normalizedBase = instanceUrl.replace(/\/$/, '');
+  const baseWithUpload = /\/upload$/.test(normalizedBase) ? normalizedBase : normalizedBase + '/upload';
+  const url = `${baseWithUpload}/${optionsSegment}`.replace('//', '/');
+
+  // Determine request body and headers
+  let body: BodyInit;
+  const headers: Record<string, string> = {};
+
+  if (input instanceof Buffer || input instanceof Uint8Array || typeof (input as any)?.pipe === 'function') {
+    // Raw binary/stream
+    body = input as any;
+    headers['content-type'] = contentType || 'application/octet-stream';
+  } else if (typeof (input as any).base64 === 'string') {
+    body = JSON.stringify({ base64: (input as { base64: string }).base64 });
+    headers['content-type'] = 'application/json';
+  } else if (typeof (input as any).dataUri === 'string') {
+    body = JSON.stringify({ dataUri: (input as { dataUri: string }).dataUri });
+    headers['content-type'] = 'application/json';
+  } else {
+    throw new Error('Unsupported upload input');
+  }
+
+  const res = await fetch(url, { method: 'POST', body, headers });
+
+  // Two possible server behaviors:
+  // 1) Responds with the transformed image bytes (image/*) → stream to temp file
+  // 2) Responds with JSON { url } → download that URL
+  const contentTypeHdr = res.headers.get('content-type') || '';
+  if (contentTypeHdr.startsWith('image/')) {
+    const outputImagePath = await streamResponseToTempFile(res, onDownloadProgress);
+    const cleanup = async () => {
+      await fs.promises.rm(outputImagePath, { force: true });
+    };
+    return { outputImagePath, cleanup };
+  }
+
+  // Fallback: assume JSON with url
+  const jsonText = await res.text();
+  let parsed: any = {};
+  try { parsed = JSON.parse(jsonText); } catch { /* ignore */ }
+  if (!res.ok) {
+    throw new Error(`Upload failed: ${res.status} ${res.statusText} ${jsonText}`);
+  }
+  if (!parsed.url) {
+    throw new Error('Upload response missing url');
+  }
+  const outputImagePath = await downloadToTempFile(parsed.url, onDownloadProgress);
   const cleanup = async () => {
     await fs.promises.rm(outputImagePath, { force: true });
   };

@@ -23,7 +23,7 @@ npm i @flyimg/flyimg.js
 ## Usage
 
 ```ts
-import { flyimg } from '@flyimg/flyimg.js';
+import { flyimg, flyimgUpload } from '@flyimg/flyimg.js';
 
 // log upload and download progress
 const onDownloadProgress = console.log;
@@ -51,6 +51,13 @@ flyimg({
 ## API
 
 - `flyimg({ instanceUrl, inputImage, options?, onDownloadProgress?, onUploadProgress? })`
+  - Returns: `{ outputImagePath, cleanup }`
+
+- `flyimgUpload({ instanceUrl, input, options?, contentType?, onDownloadProgress? })`
+  - `input` can be one of:
+    - raw binary: `Buffer`, `Uint8Array`, or `ReadableStream`
+    - JSON bodies: `{ base64: string }` or `{ dataUri: string }`
+  - When using raw binary, set `contentType` (e.g. `image/png`); defaults to `application/octet-stream`.
   - Returns: `{ outputImagePath, cleanup }`
 
 ## Options reference
@@ -130,6 +137,39 @@ await flyimg({
   instanceUrl,
   inputImage: 'https://example.com/hero.jpg',
   options: { text: 'Hello', 'text-color': 'white', 'text-size': 32 },
+});
+```
+
+- Upload raw binary directly (POST) with options inline:
+```ts
+import fs from 'node:fs';
+
+const buffer = await fs.promises.readFile('./local.png');
+const { outputImagePath } = await flyimgUpload({
+  instanceUrl,
+  input: buffer, // or a Readable stream
+  contentType: 'image/png',
+  options: { width: 800, height: 600, output: 'webp', quality: 82 },
+});
+```
+
+- Upload Base64 JSON:
+```ts
+const base64 = (await fs.promises.readFile('./local.jpg')).toString('base64');
+const { outputImagePath } = await flyimgUpload({
+  instanceUrl,
+  input: { base64 },
+  options: { output: 'avif', quality: 60 },
+});
+```
+
+- Upload Data URI JSON:
+```ts
+const dataUri = 'data:image/png;base64,' + (await fs.promises.readFile('./img.png')).toString('base64');
+const { outputImagePath } = await flyimgUpload({
+  instanceUrl,
+  input: { dataUri },
+  options: { webp-lossless: 1 },
 });
 ```
 
